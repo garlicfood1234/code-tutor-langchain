@@ -23,15 +23,13 @@ def load_curriculum():
         init_curriculum()
     return {}
 
-def add_curriculum():
-    st.switch_page("pages/add_curriculum.py")
-
 def display_curriculum_list(user_id: str):
     curriculums = load_curriculum()
         
     st.subheader("커리큘럼 목록")
 
-    st.button("커리큘럼 추가", on_click=add_curriculum)
+    if st.button("커리큘럼 추가") : 
+        st.switch_page("pages/new_curriculum.py")
 
     if not curriculums.get(user_id):
         st.warning("커리큘럼이 없습니다.")
