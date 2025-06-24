@@ -3,45 +3,18 @@ import streamlit as st
 import json
 from pathlib import Path
 import hashlib
+import sys
+
+# 'project' 폴더를 시스템 경로에 추가
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+from function import init_user_profiles, load_user_profiles, save_user_profile
 
 
 # 페이지 설정
 st.set_page_config(
     page_title = "회원 가입",
 )
-
-# 사용자 데이터를 저장할 폴더 경로 설정
-DATA_DIR = Path("data")
-DATA_DIR.mkdir(exist_ok=True) # 폴더가 없으면 생성
-
-# 사용자 정보가 저장될 JSON 파일 경로 정의
-USER_PROFILE_PATH = DATA_DIR / "user_profiles.json"
-
-# 사용자 정보 파일 없는 경우 초기화
-def init_user_profiles() : 
-    # JSON 파일이 존재하지 않으면 초기화를 수행
-    if not USER_PROFILE_PATH.exists() : 
-        # 파일을 쓰기 모드로 열고 저장 준비
-        with open(USER_PROFILE_PATH, "w", encoding = "utf-8") as f : 
-            json.dump({"users": {}}, f, ensure_ascii = False, indent = 4)
-
-# 사용자 정보 파일을 읽어와 
-def load_user_profiles() : 
-    # 파일이 존재하는지 확인 후 열어서 내용 읽기
-    if USER_PROFILE_PATH.exists() : 
-        with open(USER_PROFILE_PATH, "r", encoding = "utf-8") as f: 
-            return json.load(f)
-    
-    return {"users": {}}
-
-# 사용자 정보 파일에 저장하는 함수
-def save_user_profile(user_id, profile_data) :
-    profiles = load_user_profiles()
-    profiles["users"][user_id] = profile_data
-
-    # 파일에 정보 저장
-    with open(USER_PROFILE_PATH, "w", encoding = "utf-8") as f : 
-        json.dump(profiles, f)
 
 def main() : 
     st.title("회원 가입")

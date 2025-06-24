@@ -1,6 +1,12 @@
 import json
 import streamlit as st
 from pathlib import Path
+import sys
+
+# 'project' 폴더를 시스템 경로에 추가
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+from function import load_user_profile
 
 DATA_DIR = Path("data")
 DATA_DIR.mkdir(exist_ok=True)
@@ -34,12 +40,15 @@ def add_curriculum_to_db(name, description, curriculum):
     with open(curriculum_path, "w", encoding="utf-8") as f:
         json.dump(curriculum_data, f, ensure_ascii=False, indent=4)
 
-st.button("커리큘럼 추가", on_click=add_curriculum_to_db, args = ("test", "test", "test"))
+def main() : 
+    if "user_id" not in st.session_state or not st.session_state.user_id:
+        st.switch_page("pages/signin.py")
+        return
 
+    st.title("새로운 커리큘럼 생성")
 
+    user_profile = load_user_profile(st.session_state.user_id)
 
+    
 
-
-
-
-
+main()
