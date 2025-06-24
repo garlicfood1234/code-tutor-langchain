@@ -33,9 +33,7 @@ def display_curriculum_list(user_id: str):
 
     st.button("커리큘럼 추가", on_click=add_curriculum)
 
-    print("커리큘러 추가 버튼 출력")
-
-    if curriculums == {} or curriculums[user_id] == {}:
+    if not curriculums.get(user_id):
         st.warning("커리큘럼이 없습니다.")
         return
     
@@ -56,8 +54,9 @@ def display_curriculum_list(user_id: str):
             st.divider()
 
 def main() : 
-    if not st.session_state.user_id:
+    if "user_id" not in st.session_state or not st.session_state.user_id:
         st.switch_page("pages/signin.py")
-        return
     
     display_curriculum_list(st.session_state.user_id)
+
+main()
