@@ -17,6 +17,9 @@ st.set_page_config(
 )
 
 def main() : 
+    if "user_id" in st.session_state and st.session_state.user_id:
+        st.switch_page("pages/curriculum.py")
+
     st.title("회원 가입")
 
     # 회원가입 입력 form 생성

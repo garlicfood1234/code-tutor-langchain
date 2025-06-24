@@ -45,7 +45,7 @@ def main() :
         st.switch_page("pages/signin.py")
         return
 
-    st.title("새로운 커리큘럼 생성")
+    st.title("커리큘럼 생성")
 
     user_profile = load_user_profile(st.session_state.user_id)
 

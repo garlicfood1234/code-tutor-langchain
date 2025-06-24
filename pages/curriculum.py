@@ -28,7 +28,7 @@ def display_curriculum_list(user_id: str):
         
     st.subheader("커리큘럼 목록")
 
-    if st.button("커리큘럼 추가") : 
+    if st.button("커리큘럼 생성") : 
         st.switch_page("pages/new_curriculum.py")
 
     if not curriculums.get(user_id):
