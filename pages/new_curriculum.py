@@ -49,7 +49,7 @@ def add_curriculum_to_db(name, description, curriculum):
     with open(curriculum_path, "w", encoding="utf-8") as f:
         json.dump(curriculum_data, f, ensure_ascii=False, indent=4)
 
-def create_curriculum(age, language_level, concept, learning_goal, learning_time) : 
+def create_chain(age, language_level, concept, learning_goal, learning_time) : 
     prompt = ChatPromptTemplate.from_messages([
         ("system", f"""너는 코딩 공부 커리큘럼을 생성하는 AI야.
          
@@ -101,7 +101,7 @@ def main() :
             if time := st.chat_input("기간을 입력하세요") :
                 st.chat_message("user").markdown(time)
                 learning_time = time
-                create_curriculum(user_profile['age'], user_profile['language_level'], concept, learning_goal, learning_time)
+                create_chain(user_profile['age'], user_profile['language_level'], concept, learning_goal, learning_time)
 
 
 
