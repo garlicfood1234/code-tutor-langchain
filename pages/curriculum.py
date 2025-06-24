@@ -7,11 +7,20 @@ DATA_DIR = Path("data")
 DATA_DIR.mkdir(exist_ok=True)
 curriculum_path = DATA_DIR / "curriculums.json"
 
+def init_curriculum() : 
+    # JSON 파일이 존재하지 않으면 초기화를 수행
+    if not curriculum_path.exists() : 
+        # 파일을 쓰기 모드로 열고 저장 준비
+        with open(curriculum_path, "w", encoding = "utf-8") as f : 
+            json.dump({}, f, ensure_ascii = False, indent = 4)
+
 # 유저 커리큘럼 목록을 읽어서 반환하는 함수
 def load_curriculum():
     if curriculum_path.exists():
         with open(curriculum_path, "r", encoding="utf-8") as f:
             return json.load(f)
+    else : 
+        init_curriculum()
     return {}
 
 def add_curriculum():
