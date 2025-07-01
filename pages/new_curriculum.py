@@ -49,7 +49,7 @@ def add_curriculum_to_db(name, description, curriculum):
     with open(curriculum_path, "w", encoding="utf-8") as f:
         json.dump(curriculum_data, f, ensure_ascii=False, indent=4)
 
-def create_chain() : 
+def create_chain(question, age, language_level, concept, learning_goal, learning_time) : 
     prompt = ChatPromptTemplate.from_messages([
         ("system", f"""너는 코딩 공부 커리큘럼을 생성하는 AI야.
          
@@ -127,18 +127,18 @@ def main():
 
         elif st.session_state.learning_time is None:
             st.session_state.learning_time = temp
-            chain = create_chain()
+            chain = create_chain("시스템 프롬프트를 참고하여 커리큘럼을 생성해주세요.", user_profile["age"], user_profile["language_level"], st.session_state.concept, st.session_state.learning_goal, st.session_state.learning_time)
             output = chain.invoke(
                 {
                     "question": "시스템 프롬프트를 참고하여 커리큘럼을 생성해주세요.",
-                    "age": user_profile['age'],
-                    "language_level": user_profile['language_level'],
+                    "age": user_profile["age"],
+                    "language_level": user_profile["language_level"],
                     "concept": st.session_state.concept,
                     "learning_goal": st.session_state.learning_goal,
                     "learning_time": st.session_state.learning_time
                 }
             )
             st.session_state.chat_history.append({"role": "assistant", "content": output})
-            st.chat_message("assistant").markdown(output)
+            st.chat_message("assistant").markdown(f"```json\n{output}\n```")
 
 main()
