@@ -116,7 +116,7 @@ def main():
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
 
-        greeting = f"안녕하세요, {st.session_state.user_id}님! 커리큘럼을 생성해 봅시다. 파이썬의 많은 것들 중 무엇을 배우고 싶으신가요?"
+        greeting = f"안녕하세요, {st.session_state.user_id}님! 커리큘럼을 생성해 봅시다. 몇 가지 질문에 답변해 주시면 빠르게 커리큘럼 생성해 드리겠습니다. 파이썬의 많은 것들 중 무엇을 배우고 싶으신가요?"
         st.session_state.chat_history.append({"role": "assistant", "content": greeting})
 
     st.title("커리큘럼 생성")
