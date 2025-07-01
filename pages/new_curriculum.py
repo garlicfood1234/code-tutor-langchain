@@ -49,7 +49,7 @@ def add_curriculum_to_db(name, description, curriculum):
     with open(curriculum_path, "w", encoding="utf-8") as f:
         json.dump(curriculum_data, f, ensure_ascii=False, indent=4)
 
-def create_chain(age, language_level, concept, learning_goal, learning_time) : 
+def create_chain() : 
     prompt = ChatPromptTemplate.from_messages([
         ("system", f"""너는 코딩 공부 커리큘럼을 생성하는 AI야.
          
@@ -62,7 +62,7 @@ def create_chain(age, language_level, concept, learning_goal, learning_time) :
          - 커리큘럼의 학습 목표: {learning_goal}
          - 커리큘럼 학습 기간: {learning_time}
          
-         이 유저에게 맞는 커리큘럼을 너가 아래 json 양식으로 만들어줘.
+         이 유저에게 맞는 커리큘럼을 너가 아래 json 양식으로 만들어야 해요.
 
          (추가 필요)
 
@@ -72,43 +72,73 @@ def create_chain(age, language_level, concept, learning_goal, learning_time) :
     ])
     llm = ChatOpenAI(
         temperature=0.7,
-        model="gpt-4.1-mini",
+        model="gpt-4.1",
     )
     output_parser = StrOutputParser()
     chain = prompt | llm | output_parser
     return chain
 
-def main() : 
+def main():
     if "user_id" not in st.session_state or not st.session_state.user_id:
         st.switch_page("pages/signin.py")
         return
+
+    # 상태 변수 초기화
+    if "concept" not in st.session_state:
+        st.session_state.concept = None
+    if "learning_goal" not in st.session_state:
+        st.session_state.learning_goal = None
+    if "learning_time" not in st.session_state:
+        st.session_state.learning_time = None
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
+
+        greeting = f"안녕하세요, {st.session_state.user_id}님! 커리큘럼을 생성해 봅시다. 파이썬의 많은 것들 중 무엇을 배우고 싶으신가요?"
+        st.session_state.chat_history.append({"role": "assistant", "content": greeting})
 
     st.title("커리큘럼 생성")
 
     user_profile = load_user_profile(st.session_state.user_id)
 
-    st.chat_message("assistant").markdown(f"안녕하세요, {st.session_state.user_id}님! 커리큘럼을 생성해 봅시다. 파이썬의 많은 것들 중 무엇을 배우고 싶으신가요?")
+    # 기존 대화 내역 렌더링
+    for message in st.session_state.chat_history:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
 
-    if prompt := st.chat_input("파이썬의 많은 것들 중 배우고 싶은 것을 입력하세요") :
-        st.chat_message("user").markdown(prompt)
-        concept = prompt
-        st.chat_message("assistant").markdown(f"좋습니다. {concept}에 대해 배우려는 목적을 알려주세요.")
+    # 새 질문 입력
+    temp = st.chat_input("아무 것이나 물어보세요...")
 
-        if goal := st.chat_input("목적을 입력하세요") :
-            st.chat_message("user").markdown(goal)
-            learning_goal = goal
-            st.chat_message("assistant").markdown(f"좋습니다. {concept}에 대해 어느 정도 기간을 잡고 배우시려고 하시나요?")
-            if time := st.chat_input("기간을 입력하세요") :
-                st.chat_message("user").markdown(time)
-                learning_time = time
-                create_chain(user_profile['age'], user_profile['language_level'], concept, learning_goal, learning_time)
+    if temp:
+        # 사용자 메시지 저장 및 표시
+        st.session_state.chat_history.append({"role": "user", "content": temp})
+        st.chat_message("user").markdown(temp)
 
+        if st.session_state.concept is None:
+            st.session_state.concept = temp
+            response = f"좋습니다. {st.session_state.concept}에 대해 배우려는 목적을 알려주세요."
+            st.session_state.chat_history.append({"role": "assistant", "content": response})
+            st.chat_message("assistant").markdown(response)
 
+        elif st.session_state.learning_goal is None:
+            st.session_state.learning_goal = temp
+            response = f"좋습니다. {st.session_state.concept}에 대해 어느 정도 기간을 잡고 배우시려고 하시나요?"
+            st.session_state.chat_history.append({"role": "assistant", "content": response})
+            st.chat_message("assistant").markdown(response)
 
-
-
-
-
-    
+        elif st.session_state.learning_time is None:
+            st.session_state.learning_time = temp
+            chain = create_chain()
+            output = chain.invoke(
+                {
+                    "question": "시스템 프롬프트를 참고하여 커리큘럼을 생성해주세요.",
+                    "age": user_profile['age'],
+                    "language_level": user_profile['language_level'],
+                    "concept": st.session_state.concept,
+                    "learning_goal": st.session_state.learning_goal,
+                    "learning_time": st.session_state.learning_time
+                }
+            )
+            st.session_state.chat_history.append({"role": "assistant", "content": output})
+            st.chat_message("assistant").markdown(output)
 
 main()
