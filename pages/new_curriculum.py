@@ -164,8 +164,17 @@ def main():
             try:
                 output_dict = json.loads(output)
             except json.JSONDecodeError:
-                output_dict = {"error": "JSON 파싱 실패", "raw": output}
+                output_dict = None
             st.session_state.chat_history.append({"role": "assistant", "content": output})
-            st.chat_message("assistant").markdown(f"```{output_dict}```")
+            if output_dict is None : 
+                st.chat_message("assistant").markdown(f"커리큘럼을 생성하는 것에 실패했어요. 페이지를 새로고침하여 다시 시도해 주세요.")
+            else : 
+                output_text = "커리큘럼을 생성했어요! 채팅창에 \'커리큘럼 추가\'를 입력하여 생성된 커리큘럼을 추가해보세요. 수정했으면 좋겠다고 느끼시는 부분이 있으면 알려주세요.\n"
+                day = 1
+                for i, j in output_dict : 
+                    output_text += f"\n- {day}일차\n  - 강의 제목: {j['title']}\n  - 강의 설명: {j['description']}"
+                
+                st.chat_message("assistant").markdown(f"{output_text}")
+                
 
 main()
