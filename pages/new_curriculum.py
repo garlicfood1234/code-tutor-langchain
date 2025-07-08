@@ -171,7 +171,7 @@ def main():
             else : 
                 output_text = "커리큘럼을 생성했어요! 채팅창에 \'커리큘럼 추가\'를 입력하여 생성된 커리큘럼을 추가해보세요. 수정했으면 좋겠다고 느끼시는 부분이 있으면 알려주세요.\n"
                 day = 1
-                for i, j in output_dict : 
+                for i, j in output_dict.items() : 
                     output_text += f"\n- {day}일차\n  - 강의 제목: {j['title']}\n  - 강의 설명: {j['description']}"
                 
                 st.chat_message("assistant").markdown(f"{output_text}")
