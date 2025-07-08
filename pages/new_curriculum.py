@@ -10,6 +10,7 @@ from langchain_core.prompts import FewShotChatMessagePromptTemplate
 from langchain_core.example_selectors import SemanticSimilarityExampleSelector
 from langchain_chroma import Chroma
 from dotenv import load_dotenv
+from datetime import datetime
 load_dotenv()
 
 # 'project' 폴더를 시스템 경로에 추가
@@ -101,7 +102,7 @@ def create_chain(question, age, language_level, concept, learning_goal, learning
     chain = prompt | llm | output_parser
     return chain
 
-def parse_curriculm(output_dict) :
+def parse_curriculum(output_dict) :
     output_text = ""
     day = 1
     for i, j in output_dict.items() : 
@@ -179,9 +180,17 @@ def main():
             else : 
                 output_text = "커리큘럼을 생성했어요! 채팅창에 \'커리큘럼 추가\'를 입력하여 생성된 커리큘럼을 추가해보세요. 수정했으면 좋겠다고 느끼시는 부분이 있으면 알려주세요.\n"
                 
-                output_text += parse_curriculm(output_dict)
+                output_text += parse_curriculum(output_dict)
                 
                 st.chat_message("assistant").markdown(f"{output_text}")
-                
+                st.session_state.curriculum = output_dict
+        else : 
+            if temp == "커리큘럼 추가" or temp == "커리큘럼추가" : 
+                curriculums = load_curriculums()
+                now = datetime.now()
+                formatted = now.strftime("%Y%m%d%H%M%S")
+                curriculums[st.session_state.user_id][f'제목 없는 커리큘럼_{formatted}'] = st.session_state.curriculum
+            else : 
+                pass
 
 main()
