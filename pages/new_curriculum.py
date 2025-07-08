@@ -173,6 +173,7 @@ def main():
                 day = 1
                 for i, j in output_dict.items() : 
                     output_text += f"\n- {day}일차\n  - 강의 제목: {j['title']}\n  - 강의 설명: {j['description']}"
+                    day += 1
                 
                 st.chat_message("assistant").markdown(f"{output_text}")
                 
