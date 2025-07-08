@@ -174,7 +174,6 @@ def main():
                 output_dict = json.loads(output)
             except json.JSONDecodeError:
                 output_dict = None
-            st.session_state.chat_history.append({"role": "assistant", "content": output})
             if output_dict is None : 
                 st.chat_message("assistant").markdown(f"커리큘럼을 생성하는 것에 실패했어요. 페이지를 새로고침하여 다시 시도해 주세요.")
             else : 
@@ -182,6 +181,7 @@ def main():
                 
                 output_text += parse_curriculum(output_dict)
                 
+                st.session_state.chat_history.append({"role": "assistant", "content": output_text})
                 st.chat_message("assistant").markdown(f"{output_text}")
                 st.session_state.curriculum = output_dict
         else : 
@@ -189,7 +189,11 @@ def main():
                 curriculums = load_curriculums()
                 now = datetime.now()
                 formatted = now.strftime("%Y%m%d%H%M%S")
+                curriculums[st.session_state.user_id] = {}
                 curriculums[st.session_state.user_id][f'제목 없는 커리큘럼_{formatted}'] = st.session_state.curriculum
+                save_curriculums(curriculums)
+                st.session_state.chat_history.append({"role": "assistant", "content": "커리큘럼이 추가되었습니다! 이제 커리큘럼 페이지로 이동하여 학습을 시작해 보세요."})
+                st.chat_message("assistant").markdown(f"커리큘럼이 추가되었습니다! 이제 커리큘럼 페이지로 이동하여 학습을 시작해 보세요.")
             else : 
                 pass
 
