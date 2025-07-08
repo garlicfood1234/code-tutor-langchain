@@ -42,7 +42,6 @@ def display_curriculum_list(user_id: str):
             
             with col1:
                 st.markdown(f"**{curriculum_id}**")
-                st.markdown(f"설명: {curriculum_data.get('description', '설명 없음')}")
             
             with col2:
                 if st.button("선택", key=f"select_{idx}"):
