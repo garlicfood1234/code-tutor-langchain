@@ -101,6 +101,14 @@ def create_chain(question, age, language_level, concept, learning_goal, learning
     chain = prompt | llm | output_parser
     return chain
 
+def parse_curriculm(output_dict) :
+    output_text = ""
+    day = 1
+    for i, j in output_dict.items() : 
+        output_text += f"\n- {day}일차\n  - 강의 제목: {j['title']}\n  - 강의 설명: {j['description']}"
+        day += 1
+    return output_text
+
 def main():
     if "user_id" not in st.session_state or not st.session_state.user_id:
         st.switch_page("pages/signin.py")
@@ -170,10 +178,8 @@ def main():
                 st.chat_message("assistant").markdown(f"커리큘럼을 생성하는 것에 실패했어요. 페이지를 새로고침하여 다시 시도해 주세요.")
             else : 
                 output_text = "커리큘럼을 생성했어요! 채팅창에 \'커리큘럼 추가\'를 입력하여 생성된 커리큘럼을 추가해보세요. 수정했으면 좋겠다고 느끼시는 부분이 있으면 알려주세요.\n"
-                day = 1
-                for i, j in output_dict.items() : 
-                    output_text += f"\n- {day}일차\n  - 강의 제목: {j['title']}\n  - 강의 설명: {j['description']}"
-                    day += 1
+                
+                output_text += parse_curriculm(output_dict)
                 
                 st.chat_message("assistant").markdown(f"{output_text}")
                 
