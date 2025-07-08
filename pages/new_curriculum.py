@@ -16,7 +16,7 @@ load_dotenv()
 # 'project' 폴더를 시스템 경로에 추가
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-from function import load_user_profile
+from function import load_user_profile, load_curriculums, save_curriculums
 
 DATA_DIR = Path("data")
 DATA_DIR.mkdir(exist_ok=True)
