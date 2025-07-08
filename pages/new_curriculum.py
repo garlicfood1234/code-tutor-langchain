@@ -161,7 +161,11 @@ def main():
                     "learning_time": st.session_state.learning_time
                 }
             )
+            try:
+                output_dict = json.loads(output)
+            except json.JSONDecodeError:
+                output_dict = {"error": "JSON 파싱 실패", "raw": output}
             st.session_state.chat_history.append({"role": "assistant", "content": output})
-            st.chat_message("assistant").markdown(f"```json\n{output}\n```")
+            st.chat_message("assistant").markdown(f"```{output_dict}```")
 
 main()
