@@ -52,5 +52,5 @@ def load_curriculums() :
     return {}
 
 def save_curriculums(curriculum_data) : 
-    with open(curriculum_data, "w", encoding="utf-8") as f:
+    with open(curriculum_path, "w", encoding="utf-8") as f:
         json.dump(curriculum_data, f, ensure_ascii=False, indent=4)
