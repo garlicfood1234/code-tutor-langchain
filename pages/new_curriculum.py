@@ -111,9 +111,9 @@ def create_edit_chain(age, language_level, concept, learning_goal, learning_time
 - 학습 수준(최하, 하, 중하, 중, 중상, 상, 최상 중 하나): {language_level}
 
 이미 만들어진 커리큘럼의 정보는 다음과 같아:
-- 커리큘럼 이름: {concept}
-- 커리큘럼의 학습 목표: {learning_goal}
-- 커리큘럼 학습 기간: {learning_time}
+- 커리큘럼 이름: {concept} (단, 유저가 수정을 원할 시 수정 가능)
+- 커리큘럼의 학습 목표: {learning_goal} (단, 유저가 수정을 원할 시 수정 가능)
+- 커리큘럼 학습 기간: {learning_time} (단, 유저가 수정을 원할 시 수정 가능)
 
 유저의 수정 요청에 따라 기존 커리큘럼을 너가 아래 JSON 양식으로 만들어야 해요.
 
