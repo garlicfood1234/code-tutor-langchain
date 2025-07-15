@@ -200,6 +200,7 @@ def main():
                 del st.session_state['learning_goal']
                 del st.session_state['learning_time']
                 del st.session_state['curriculum']
+                del st.session_state['chat_history']
             else : 
                 pass
 
