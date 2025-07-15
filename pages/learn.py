@@ -12,13 +12,13 @@ def main() :
     if 'user_id' not in st.session_state : 
         st.switch_page("pages/login.py")
     
-    if 'curriculum' not in st.session_state : 
+    if 'selected_curriculum' not in st.session_state : 
         st.switch_page("pages/curriculum.py")
 
     curriculums = load_curriculum()[st.session_state.user_id]
-    st.session_state.learning_curriculum = curriculums[st.session_state.curriculum_id]
+    st.session_state.learning_curriculum = curriculums[st.session_state.selected_curriculum]
 
     st.title(f"커리큘럼 학습")
-    st.subheader(f"{st.session_state.learning_curriculum['concept']}")
+    st.subheader(f"{st.session_state.selected_curriculum}")
 
 main()
