@@ -195,6 +195,11 @@ def main():
                 save_curriculums(curriculums)
                 st.session_state.chat_history.append({"role": "assistant", "content": "커리큘럼이 추가되었습니다! 이제 커리큘럼 페이지로 이동하여 학습을 시작해 보세요."})
                 st.chat_message("assistant").markdown(f"커리큘럼이 추가되었습니다! 이제 커리큘럼 페이지로 이동하여 학습을 시작해 보세요.")
+                st.session_state.chat_history = []
+                st.session_state.concept = None
+                st.session_state.learning_goal = None
+                st.session_state.learning_time = None
+                st.session_state.curriculum = None
             else : 
                 pass
 
