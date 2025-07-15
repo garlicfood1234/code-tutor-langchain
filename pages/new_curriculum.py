@@ -189,7 +189,8 @@ def main():
                 curriculums = load_curriculums()
                 now = datetime.now()
                 formatted = now.strftime("%Y%m%d%H%M%S")
-                curriculums[st.session_state.user_id] = {}
+                if st.session_state.user_id not in curriculums : 
+                    curriculums[st.session_state.user_id] = {}
                 curriculums[st.session_state.user_id][f'제목 없는 커리큘럼_{formatted}'] = st.session_state.curriculum
                 save_curriculums(curriculums)
                 st.session_state.chat_history.append({"role": "assistant", "content": "커리큘럼이 추가되었습니다! 이제 커리큘럼 페이지로 이동하여 학습을 시작해 보세요."})
