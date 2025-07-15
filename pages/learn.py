@@ -7,3 +7,11 @@ from function import *
 DATA_DIR = Path("data")
 DATA_DIR.mkdir(exist_ok=True)
 curriculum_path = DATA_DIR / "curriculums.json"
+
+def main() : 
+    if 'user_id' not in st.session_state : 
+        st.switch_page("pages/login.py")
+
+    curriculums = load_curriculum()[st.session_state.user_id]
+
+main()
