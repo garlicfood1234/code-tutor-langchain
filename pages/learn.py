@@ -21,6 +21,23 @@ def main() :
     st.title(f"커리큘럼 학습")
     st.subheader(f"{st.session_state.selected_curriculum}")
 
+    curriculum_data = load_curriculum()[st.session_state.user_id][st.session_state.selected_curriculum]
+
+    for day, day_data in curriculum_data.items():
+        col1, col2 = st.columns([3, 1])
+
+        with col1 : 
+            st.subheader(f"{day}")
+            st.markdown(f"{day_data['title']}: {day_data['description']}")
+        
+        with col2 : 
+            if st.button("선택", key=f"select_{day}"):
+                st.session_state.selected_day = day
+                st.switch_page("pages/learn_page.py")
+        
+        st.divider()
+    
+            
 '''
 커리큘럼 학습 페이지 구성
 

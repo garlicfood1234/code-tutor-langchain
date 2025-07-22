@@ -1,11 +1,36 @@
 import json
 import streamlit as st
 from pathlib import Path
+import sqlite3
 
 DATA_DIR = Path("data")
 DATA_DIR.mkdir(exist_ok=True)
 curriculum_path = DATA_DIR / "curriculums.json"
 USER_PROFILE_PATH = DATA_DIR / "user_profiles.json"
+
+def init_db() : 
+    conn = sqlite3.connect("data/data.db")
+    cursor = conn.cursor()
+
+    cursor = cursor.execute("CREATE TABLE IF NOT EXISTS chat_history (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, curriculum_title TEXT, user_ai TEXT, chat_history TEXT)") # user_ai: 챗봇이 친 건지 유저가 친 건지 구분, user_id 유저 id, chat_history: 채팅 히스토리
+    conn.commit()
+    conn.close()
+
+def save_chat_history(user_id, curriculum_title, user_ai, chat_history) : 
+    conn = sqlite3.connect("data/data.db")
+    cursor = conn.cursor()
+
+    cursor.execute("INSERT INTO chat_history (user_id, curriculum_title, user_ai, chat_history) VALUES (?, ?, ?, ?)", (user_id, curriculum_title, user_ai, chat_history))
+    conn.commit()
+    conn.close()
+
+def load_chat_history(user_id, curriculum_title) : 
+    conn = sqlite3.connect("data/data.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM chat_history WHERE user_id = ? AND curriculum_title = ?", (user_id, curriculum_title))
+    temp = cursor.fetchall()
+    conn.close()
+    return temp
 
 # 사용자 정보 파일을 읽어와 
 def load_user_profiles() : 
