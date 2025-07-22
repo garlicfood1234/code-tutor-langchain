@@ -16,5 +16,9 @@ def main() :
     
     curriculum_data = load_curriculum()[st.session_state.user_id][st.session_state.selected_curriculum][st.session_state.selected_day]
     st.title(f"{st.session_state.selected_curriculum} - {st.session_state.selected_day}")
+    st.header(f"{curriculum_data['title']}")
+    st.markdown(f"{curriculum_data['description']}")
+
+    st.divider()
 
 main()
