@@ -16,7 +16,7 @@ load_dotenv()
 # 'project' 폴더를 시스템 경로에 추가
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-from function import load_user_profile, load_curriculums, save_curriculums
+from function import *
 
 DATA_DIR = Path("data")
 DATA_DIR.mkdir(exist_ok=True)
@@ -241,7 +241,7 @@ def main():
                 st.session_state.curriculum = output_dict
         else : 
             if temp == "커리큘럼 추가" or temp == "커리큘럼추가" : 
-                curriculums = load_curriculums()
+                curriculums = load_curriculum()
                 now = datetime.now()
                 formatted = now.strftime("%Y%m%d%H%M%S")
                 if st.session_state.user_id not in curriculums : 
