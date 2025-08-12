@@ -31,7 +31,7 @@ def display_curriculum_list(user_id: str):
     st.session_state.current_user_id = user_id
 
     # 다이얼로그 정의
-    @st.dialog("커리큘럼 이름 수정")
+    @st.dialog("커리큘럼 수정")
     def curriculum_edit_dialog():
         st.text_input(
             "새 커리큘럼 이름",
@@ -44,7 +44,7 @@ def display_curriculum_list(user_id: str):
             curriculums_inner = load_curriculum()
             user_curriculums = curriculums_inner.get(user_id_inner, {})
             if not new_name:
-                st.warning("새 커리큘럼 이름을 입력하세요.")
+                st.error("새 커리큘럼 이름을 입력하세요.")
             elif new_name == old_name:
                 st.session_state.edit_modal_open = False
                 st.session_state.editing_curriculum_id = None
