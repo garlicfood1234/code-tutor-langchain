@@ -2,6 +2,8 @@ import json
 import streamlit as st
 from pathlib import Path
 import sys
+import threading
+import time
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain_core.output_parsers import StrOutputParser
@@ -156,6 +158,67 @@ def create_edit_chain(age, language_level, concept, learning_goal, learning_time
     chain = prompt | llm | output_parser
     return chain
 
+def invoke_with_progress(invoke_callable, total_seconds: float = 30.0, early_delay_seconds: float = 0.5, label: str = "처리 중입니다..."):
+    """Run a blocking callable in a background thread while updating a progress bar.
+
+    - Fills to 100% within total_seconds.
+    - If the task finishes early: jump to 100%, wait early_delay_seconds, then return.
+    - If total_seconds elapse without completion: stay at 99% until finished, then set 100%.
+    """
+    progress_placeholder = st.empty()
+    progress_bar = progress_placeholder.progress(0, text=label)
+
+    result_box = {"result": None, "error": None}
+    done_event = threading.Event()
+
+    def _run():
+        try:
+            result_box["result"] = invoke_callable()
+        except Exception as exc:  # noqa: BLE001 - propagate later
+            result_box["error"] = exc
+        finally:
+            done_event.set()
+
+    worker = threading.Thread(target=_run, daemon=True)
+    worker.start()
+
+    start_time = time.time()
+    current_percent = 0
+    update_interval = 0.1  # seconds
+    max_percent_before_timeout = 99
+
+    while True:
+        if done_event.is_set():
+            progress_bar.progress(100, text=label)
+            time.sleep(early_delay_seconds)
+            progress_placeholder.empty()
+            if result_box["error"] is not None:
+                raise result_box["error"]
+            return result_box["result"]
+
+        elapsed = time.time() - start_time
+        if elapsed < total_seconds:
+            target_percent = min(
+                max_percent_before_timeout,
+                int((elapsed / total_seconds) * max_percent_before_timeout),
+            )
+            if target_percent > current_percent:
+                current_percent = target_percent
+                progress_bar.progress(current_percent, text=label)
+            time.sleep(update_interval)
+        else:
+            # Reached the total_seconds without completion: hold at 99%
+            if current_percent < max_percent_before_timeout:
+                current_percent = max_percent_before_timeout
+                progress_bar.progress(current_percent, text=label)
+            # Poll for completion
+            if done_event.wait(timeout=update_interval):
+                progress_bar.progress(100, text=label)
+                progress_placeholder.empty()
+                if result_box["error"] is not None:
+                    raise result_box["error"]
+                return result_box["result"]
+
 def parse_curriculum(output_dict) :
     output_text = ""
     day = 1
@@ -214,15 +277,20 @@ def main():
         elif st.session_state.learning_time is None:
             st.session_state.learning_time = temp
             chain = create_chain("시스템 프롬프트를 참고하여 커리큘럼을 생성해주세요.", user_profile["age"], user_profile["language_level"], st.session_state.concept, st.session_state.learning_goal, st.session_state.learning_time)
-            output = chain.invoke(
-                {
-                    "question": "시스템 프롬프트를 참고하여 커리큘럼을 생성해주세요.",
-                    "age": user_profile["age"],
-                    "language_level": user_profile["language_level"],
-                    "concept": st.session_state.concept,
-                    "learning_goal": st.session_state.learning_goal,
-                    "learning_time": st.session_state.learning_time
-                }
+            output = invoke_with_progress(
+                lambda: chain.invoke(
+                    {
+                        "question": "시스템 프롬프트를 참고하여 커리큘럼을 생성해주세요.",
+                        "age": user_profile["age"],
+                        "language_level": user_profile["language_level"],
+                        "concept": st.session_state.concept,
+                        "learning_goal": st.session_state.learning_goal,
+                        "learning_time": st.session_state.learning_time,
+                    }
+                ),
+                total_seconds=30.0,
+                early_delay_seconds=0.5,
+                label="커리큘럼을 생성하는 중입니다...",
             )
             try:
                 output_dict = json.loads(output)
@@ -258,10 +326,11 @@ def main():
                 del st.session_state['chat_history']
             else : 
                 chain = create_edit_chain(user_profile["age"], user_profile["language_level"], st.session_state.concept, st.session_state.learning_goal, st.session_state.learning_time)
-                output = chain.invoke(
-                    {
-                        "input": temp
-                    }
+                output = invoke_with_progress(
+                    lambda: chain.invoke({"input": temp}),
+                    total_seconds=30.0,
+                    early_delay_seconds=0.5,
+                    label="커리큘럼을 수정하는 중입니다...",
                 )
                 try:
                     output_dict = json.loads(output)
