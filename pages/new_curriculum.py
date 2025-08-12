@@ -277,7 +277,6 @@ def main():
                 
                 st.session_state.chat_history.append({"role": "assistant", "content": output_text})
                 st.chat_message("assistant").markdown(f"{output_text}")
-                st.session_state.curriculum = output_dict
-                
+                st.session_state.curriculum = output_dict              
 
 main()
