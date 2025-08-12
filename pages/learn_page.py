@@ -1,6 +1,8 @@
 import streamlit as st
 from function import *
 import sqlite3
+import threading
+import time
 
 import json
 from langchain_core.prompts import ChatPromptTemplate
@@ -92,6 +94,55 @@ quiz: 퀴즈나 실습 문제
 
 st.session_state.chat_log = []
 
+def invoke_with_progress(invoke_callable, total_seconds: float = 30.0, early_delay_seconds: float = 0.5, label: str = "처리 중입니다..."):
+    progress_placeholder = st.empty()
+    progress_bar = progress_placeholder.progress(0, text=label)
+
+    result_box = {"result": None, "error": None}
+    done_event = threading.Event()
+
+    def _run():
+        try:
+            result_box["result"] = invoke_callable()
+        except Exception as exc:
+            result_box["error"] = exc
+        finally:
+            done_event.set()
+
+    threading.Thread(target=_run, daemon=True).start()
+
+    start_time = time.time()
+    current_percent = 0
+    update_interval = 0.1
+    max_percent_before_timeout = 99
+
+    while True:
+        if done_event.is_set():
+            progress_bar.progress(100, text=label)
+            time.sleep(early_delay_seconds)
+            progress_placeholder.empty()
+            if result_box["error"] is not None:
+                raise result_box["error"]
+            return result_box["result"]
+
+        elapsed = time.time() - start_time
+        if elapsed < total_seconds:
+            target_percent = min(max_percent_before_timeout, int((elapsed / total_seconds) * max_percent_before_timeout))
+            if target_percent > current_percent:
+                current_percent = target_percent
+                progress_bar.progress(current_percent, text=label)
+            time.sleep(update_interval)
+        else:
+            if current_percent < max_percent_before_timeout:
+                current_percent = max_percent_before_timeout
+                progress_bar.progress(current_percent, text=label)
+            if done_event.wait(timeout=update_interval):
+                progress_bar.progress(100, text=label)
+                progress_placeholder.empty()
+                if result_box["error"] is not None:
+                    raise result_box["error"]
+                return result_box["result"]
+
 def main() : 
     if "user_id" not in st.session_state or not st.session_state.user_id:
         st.switch_page("pages/signin.py")
@@ -113,7 +164,12 @@ def main() :
     st.divider()
 
     chain = create_chain(curriculum_data, user_age, user_language_level)
-    result = chain.invoke({"question": "교안을 생성해주세요."})
+    result = invoke_with_progress(
+        lambda: chain.invoke({"question": "교안을 생성해주세요."}),
+        total_seconds=30.0,
+        early_delay_seconds=0.5,
+        label="교안을 생성하는 중입니다...",
+    )
     
     try : 
         result_dict = json.loads(result)
@@ -160,7 +216,13 @@ def main() :
             "content": temp
         })
 
-        result = create_chat_chain(result_dict, temp).invoke({"curriculum_data": result_dict, "user_question": temp})
+        chat_chain = create_chat_chain(result_dict, temp)
+        result = invoke_with_progress(
+            lambda: chat_chain.invoke({"curriculum_data": result_dict, "user_question": temp}),
+            total_seconds=30.0,
+            early_delay_seconds=0.5,
+            label="답변을 생성하는 중입니다...",
+        )
         st.chat_message("assistant").markdown(result)
 
         st.session_state.chat_log.append({

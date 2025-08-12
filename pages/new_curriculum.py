@@ -302,7 +302,7 @@ def main():
                         "learning_time": learning_time_value,
                     }
                 ),
-                total_seconds=30.0,
+                total_seconds=15.0,
                 early_delay_seconds=0.5,
                 label="커리큘럼을 생성하는 중입니다...",
             )
@@ -355,7 +355,7 @@ def main():
                 )
                 output = invoke_with_progress(
                     lambda: chain.invoke({"input": temp}),
-                    total_seconds=30.0,
+                    total_seconds=15.0,
                     early_delay_seconds=0.5,
                     label="커리큘럼을 수정하는 중입니다...",
                 )
