@@ -166,7 +166,7 @@ def main() :
     chain = create_chain(curriculum_data, user_age, user_language_level)
     result = invoke_with_progress(
         lambda: chain.invoke({"question": "교안을 생성해주세요."}),
-        total_seconds=12.5,
+        total_seconds=15.0,
         early_delay_seconds=0.5,
         label="교안을 생성하는 중입니다...",
     )
