@@ -276,16 +276,30 @@ def main():
 
         elif st.session_state.learning_time is None:
             st.session_state.learning_time = temp
-            chain = create_chain("시스템 프롬프트를 참고하여 커리큘럼을 생성해주세요.", user_profile["age"], user_profile["language_level"], st.session_state.concept, st.session_state.learning_goal, st.session_state.learning_time)
+            # 스레드 내에서 session_state 접근을 피하기 위해 지역 변수로 복사
+            age_value = user_profile["age"]
+            language_level_value = user_profile["language_level"]
+            concept_value = st.session_state.concept
+            learning_goal_value = st.session_state.learning_goal
+            learning_time_value = st.session_state.learning_time
+
+            chain = create_chain(
+                "시스템 프롬프트를 참고하여 커리큘럼을 생성해주세요.",
+                age_value,
+                language_level_value,
+                concept_value,
+                learning_goal_value,
+                learning_time_value,
+            )
             output = invoke_with_progress(
                 lambda: chain.invoke(
                     {
                         "question": "시스템 프롬프트를 참고하여 커리큘럼을 생성해주세요.",
-                        "age": user_profile["age"],
-                        "language_level": user_profile["language_level"],
-                        "concept": st.session_state.concept,
-                        "learning_goal": st.session_state.learning_goal,
-                        "learning_time": st.session_state.learning_time,
+                        "age": age_value,
+                        "language_level": language_level_value,
+                        "concept": concept_value,
+                        "learning_goal": learning_goal_value,
+                        "learning_time": learning_time_value,
                     }
                 ),
                 total_seconds=30.0,
@@ -325,7 +339,20 @@ def main():
                 del st.session_state['curriculum']
                 del st.session_state['chat_history']
             else : 
-                chain = create_edit_chain(user_profile["age"], user_profile["language_level"], st.session_state.concept, st.session_state.learning_goal, st.session_state.learning_time)
+                # 스레드 내에서 session_state 접근을 피하기 위해 지역 변수로 복사
+                age_value = user_profile["age"]
+                language_level_value = user_profile["language_level"]
+                concept_value = st.session_state.concept
+                learning_goal_value = st.session_state.learning_goal
+                learning_time_value = st.session_state.learning_time
+
+                chain = create_edit_chain(
+                    age_value,
+                    language_level_value,
+                    concept_value,
+                    learning_goal_value,
+                    learning_time_value,
+                )
                 output = invoke_with_progress(
                     lambda: chain.invoke({"input": temp}),
                     total_seconds=30.0,
