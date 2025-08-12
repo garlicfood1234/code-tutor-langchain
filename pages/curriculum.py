@@ -19,8 +19,8 @@ def display_curriculum_list(user_id: str):
         st.warning("커리큘럼이 없습니다.")
         return
     
-    # 각 커리큘럼을 카드 형태로 표시
-    for idx, (curriculum_id, curriculum_data) in enumerate(curriculums[user_id].items()):
+    # 각 커리큘럼을 카드 형태로 표시 (역순)
+    for idx, (curriculum_id, curriculum_data) in enumerate(reversed(list(curriculums[user_id].items()))):
         with st.container():
             col1, col2 = st.columns([3, 1])
             
