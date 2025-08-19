@@ -10,6 +10,10 @@ st.set_page_config(
     page_title="로그인",
 )
 
+from function import style
+
+st.markdown(style, unsafe_allow_html=True)
+
 # 데이터 저장 경로 설정
 DATA_DIR = Path("data")
 DATA_DIR.mkdir(exist_ok=True)

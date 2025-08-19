@@ -20,6 +20,8 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 from function import *
 
+st.markdown(style, unsafe_allow_html=True)
+
 DATA_DIR = Path("data")
 DATA_DIR.mkdir(exist_ok=True)
 curriculum_path = DATA_DIR / "curriculums.json"

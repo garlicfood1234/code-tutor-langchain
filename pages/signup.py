@@ -8,8 +8,9 @@ import sys
 # 'project' 폴더를 시스템 경로에 추가
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-from function import init_user_profiles, load_user_profiles, save_user_profile
+from function import init_user_profiles, load_user_profiles, save_user_profile, style
 
+st.markdown(style, unsafe_allow_html=True)
 
 # 페이지 설정
 st.set_page_config(

@@ -16,6 +16,10 @@ from dotenv import load_dotenv
 from datetime import datetime
 load_dotenv()
 
+import streamlit as st
+
+st.markdown(style, unsafe_allow_html=True)
+
 def create_chat_chain(result_dict, question) :
     prompt = ChatPromptTemplate.from_messages([
         ("system", """너는 코딩 공부 커리큘럼의 한 차시 교안에 대한 질문을 받는 ai야.
