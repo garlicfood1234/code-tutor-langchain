@@ -182,8 +182,8 @@ def main() :
     for section in result_dict:
         st.subheader(f"{section.get('subtitle', '')}")
         result_text += f"## {section.get('subtitle', '')}\n"
-        st.markdown(f"**설명: **\n{section.get('guide', '')}")
-        result_text += f"**설명: **\n{section.get('guide', '')}\n"
+        st.markdown(f"**설명**: \n{section.get('guide', '')}")
+        result_text += f"**설명**: \n{section.get('guide', '')}\n"
         if section.get('example'):
             st.markdown(f"**예시**: \n```python\n{section['example']}\n```")
             result_text += f"**예시**: \n```python\n{section['example']}\n```\n"
