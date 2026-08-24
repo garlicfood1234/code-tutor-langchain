@@ -45,7 +45,7 @@ def main() :
         with col1 : 
             sign_up_submitted = st.form_submit_button("가입")
         with col2 : 
-            if st.form_submit_button("돌아가기") : 
+            if st.form_submit_button("취소") : 
                 st.switch_page("main.py")
 
         if sign_up_submitted : 
@@ -55,18 +55,18 @@ def main() :
                 st.error("필수 입력란이 비어있습니다.")
             # 비밀번호가 확인 비밀번호와 일치하는지 확인
             elif pw != confirm_pw : 
-                st.error("confirm_pw의 값이 올바르지 않습니다.")
+                st.error("입력한 비밀번호 2개가 일치하지 않습니다.")
             else : 
                 profiles = load_user_profiles()
 
                 if id in profiles["users"] : 
-                    st.error("id의 값은 중복되지 않아야 합니다.")
-                elif len(id) < 5 : 
-                    st.error("id의 길이는 5 이상이어야 합니다.")
+                    st.error("이미 사용 중인 아이디입니다.")
+                elif len(id) < 5 or len(id) > 64 : 
+                    st.error("아이디는 5자 이상이고 64자 이하여야 합니다.")
                 elif len(pw) < 8 : 
-                    st.error("pw의 길이는 8 이상이어야 합니다.")
+                    st.error("비밀번호의 길이는 8자 이상이어야 합니다.")
                 elif age < 14 : 
-                    st.error("age의 값은 14 이상이어야 합니다.")
+                    st.error("만 14세 미만은 서비스를 이용할 수 없습니다.")
                 else : 
                     # 사용자 정보를 딕셔너리로 정리
                     profile_data = {

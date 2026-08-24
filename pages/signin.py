@@ -74,14 +74,15 @@ def main():
         # 로그인 폼 검사
         if login_submitted : 
             if not username or not password : 
-                st.error("입력란이 올바르지 않습니다.")
+                st.error("올바르지 않은 아이디 또는 비밀번호입니다.")
+            
             elif auth_user(username, hashlib.sha256(password.encode('utf-8')).hexdigest()) : 
                 st.session_state.user_id = username
                 st.session_state.logged_in = True
                 st.success("로그인 성공")
                 st.switch_page("pages/curriculum.py")
             else : 
-                st.error("입력란이 올바르지 않습니다.")
+                st.error("로그인에 실패했습니다. 아이디 또는 비밀번호가 올바르지 않거나 기타 다른 오류가 발생했습니다.")
 
 if __name__ == "__main__":
     main()
